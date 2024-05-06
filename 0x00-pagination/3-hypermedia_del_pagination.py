@@ -50,8 +50,7 @@ class Server:
         if index is None:
             index = 0
 
-        assert index in indexed_dataset, \
-            "Index is out of range"
+        assert index in indexed_dataset, "Index is out of range"
 
         data = []
         for i in range(index, index + page_size):
