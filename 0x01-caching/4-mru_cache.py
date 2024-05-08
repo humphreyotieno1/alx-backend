@@ -4,31 +4,35 @@ from base_caching import BaseCaching
 
 
 class MRUCache(BaseCaching):
-    """ MRUCache class that inherits from BaseCaching """
-
+    """implements MRU caching policy"""
     def __init__(self):
-        """ Initialize """
+        """initialisation method"""
         super().__init__()
+        self.keys = []
 
     def put(self, key, item):
-        """ Add an item to the cache """
+        """assigns key value to cache dictionary"""
         if key is None or item is None:
-            return
-
-        self.cache_data[key] = item
-
-        if len(self.cache_data) > self.MAX_ITEMS:
-            mru_key = self.get_mru_key()
-            del self.cache_data[mru_key]
-            print("DISCARD:", mru_key)
+            pass
+        else:
+            if key in self.keys:
+                self.keys.remove(key)
+            self.keys.append(key)
+            self.cache_data[key] = item
+            if len(self.keys) > self.MAX_ITEMS:
+                most_recent = self.keys.pop(-2)
+                del self.cache_data[most_recent]
+                print("DISCARD: {}".format(most_recent))
 
     def get(self, key):
-        """ Get an item by key """
-        if key is None or key not in self.cache_data:
-            return None
+        """gets the value of key"""
+        if key:
+            if key in self.keys:
+                self.keys.remove(key)
+                self.keys.append(key)
 
-        return self.cache_data[key]
-
-    def get_mru_key(self):
-        """ Get the key of the most recently used item """
-        return next(reversed(self.cache_data))
+            try:
+                return self.cache_data[key]
+            except Exception as e:
+                return None
+        return None
